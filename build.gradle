@@ -1,7 +1,10 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.2.50'
+    ext.kotlin_version = '1.2.60'
+    ext.firebaseAuthVersion = '16.0.3'
+    ext.firebaseCoreVersion = '16.0.1'
+    ext.playServicesAuth = '16.0.0'
     repositories {
         google()
         jcenter()
