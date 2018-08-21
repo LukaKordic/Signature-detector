@@ -4,12 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".LoginActivity"
+    tools:layout_editor_absoluteY="81dp">
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/googleSignInBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:buttonSize="wide" />
+        android:layout_marginTop="8dp"
+        app:buttonSize="wide"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
