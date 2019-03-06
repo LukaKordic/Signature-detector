@@ -1,4 +1,4 @@
-package com.lukakordic.signaturedetector
+package com.lukakordic.signaturedetector.ui
 
 import android.content.Context
 import android.content.Intent
@@ -8,6 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.lukakordic.signaturedetector.R
+import com.lukakordic.signaturedetector.ui.login.LoginActivity
 
 class ContentActivity : AppCompatActivity() {
 
