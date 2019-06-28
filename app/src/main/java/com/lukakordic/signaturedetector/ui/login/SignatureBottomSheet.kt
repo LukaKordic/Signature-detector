@@ -2,13 +2,11 @@ package com.lukakordic.signaturedetector.ui.login
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.lukakordic.signaturedetector.R
 import com.lukakordic.signaturedetector.utils.RC_CAPTURE_IMAGE
@@ -30,7 +28,9 @@ class SignatureBottomSheet : BottomSheetDialogFragment() {
   }
   
   private fun setListeners() {
-    takeScreenshot.onClick { launchCamera() } //TODO launch camera
+    takeScreenshot.onClick {
+      launchCamera()
+    }
     selectFromGallery.onClick { } //TODO launch gallery
   }
   
@@ -41,8 +41,7 @@ class SignatureBottomSheet : BottomSheetDialogFragment() {
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
     if (requestCode == RC_CAPTURE_IMAGE && resultCode == Activity.RESULT_OK) {
-      val image = data?.extras?.get("data") as Bitmap
-      requireActivity().findViewById<ImageView>(R.id.photoPreview).setImageBitmap(image)
+      dismiss()
     }
   }
 }
