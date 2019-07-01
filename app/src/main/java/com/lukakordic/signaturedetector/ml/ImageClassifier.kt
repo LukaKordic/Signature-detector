@@ -15,6 +15,7 @@ import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.min
 
 class ImageClassifier(private val assetManager: AssetManager) {
   
@@ -49,9 +50,11 @@ class ImageClassifier(private val assetManager: AssetManager) {
     for (i in 0 until DIM_IMG_SIZE_X) {
       for (j in 0 until DIM_IMG_SIZE_Y) {
         val value = intValues[pixel++]
-        imgData.put((value shr 16 and 0xFF).toByte())
-        imgData.put((value shr 8 and 0xFF).toByte())
-        imgData.put((value and 0xFF).toByte())
+        val r = (value shr 16 and 0xFF)
+        val g = (value shr 8 and 0xFF)
+        val b = (value and 0xFF)
+        val grey = ((r + g + b) / 3) / 255.0f
+        imgData.putFloat(grey)
       }
     }
   }
@@ -68,18 +71,24 @@ class ImageClassifier(private val assetManager: AssetManager) {
   fun recognizeSignature(bitmap: Bitmap): Single<List<Result>> {
     return Single.just(bitmap).flatMap {
       convertBitmapToByteBuffer(it)
-      interpreter.run(imgData, labelProb)
-      val results = ArrayList<Result>(2)
-      labels.forEachIndexed { index, element ->
-        results.add(Result("" + index, element, labelProb[0][index]))
+      interpreter.run(imgData, labelProb) //todo close interpreter
+      val pq = PriorityQueue(3,
+                             Comparator<Result> { lhs, rhs ->
+                               // Intentionally reversed to put high confidence at the head of the queue.
+                               (rhs.confidence).compareTo(lhs.confidence)
+                             })
+      for (i in labels.indices) {
+        pq.add(Result("$i", if (labels.size > i) labels[i] else "unknown", labelProb[0][i]))
       }
-//      for (i in labels.indices) {
-//        pq.add(Result("" + i, if (labels.size > i) labels[i] else "unknown", labelProb[0][0]))
+      val recognitions = ArrayList<Result>()
+      val recognitionsSize = min(pq.size, MAX_RESULTS)
+      for (i in 0 until recognitionsSize) recognitions.add(pq.poll())
+
+//      val results = ArrayList<Result>(2)
+//      labels.forEachIndexed { index, element ->
+//        results.add(Result("" + index, element, labelProb[0][index]))
 //      }
-//      val recognitions = ArrayList<Result>()
-//      val recognitionsSize = Math.min(results.size, MAX_RESULTS)
-//      for (i in 0 until recognitionsSize) recognitions.add(pq.poll())
-      return@flatMap Single.just(results)
+      return@flatMap Single.just(recognitions)
     }
   }
 }
