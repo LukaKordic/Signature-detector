@@ -5,10 +5,7 @@ import android.graphics.Bitmap
 import com.lukakordic.signaturedetector.utils.*
 import io.reactivex.Single
 import org.tensorflow.lite.Interpreter
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.IOException
-import java.io.InputStreamReader
+import java.io.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
@@ -27,7 +24,7 @@ class ImageClassifier(private val assetManager: AssetManager) {
   
   init {
     try {
-      val reader = BufferedReader(InputStreamReader(assetManager.open(LABEL_NAME)))
+      val reader = BufferedReader(InputStreamReader(assetManager.open(LABEL_NAME)) as Reader?)
       reader.use {
         while (true) {
           val line = reader.readLine() ?: break
@@ -72,7 +69,7 @@ class ImageClassifier(private val assetManager: AssetManager) {
     return Single.just(bitmap).flatMap {
       convertBitmapToByteBuffer(it)
       interpreter.run(imgData, labelProb) //todo close interpreter
-      val pq = PriorityQueue(3,
+      val pq = PriorityQueue(2,
                              Comparator<Result> { lhs, rhs ->
                                // Intentionally reversed to put high confidence at the head of the queue.
                                (rhs.confidence).compareTo(lhs.confidence)
@@ -83,11 +80,7 @@ class ImageClassifier(private val assetManager: AssetManager) {
       val recognitions = ArrayList<Result>()
       val recognitionsSize = min(pq.size, MAX_RESULTS)
       for (i in 0 until recognitionsSize) recognitions.add(pq.poll())
-
-//      val results = ArrayList<Result>(2)
-//      labels.forEachIndexed { index, element ->
-//        results.add(Result("" + index, element, labelProb[0][index]))
-//      }
+      
       return@flatMap Single.just(recognitions)
     }
   }

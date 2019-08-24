@@ -101,7 +101,7 @@ class LoginActivity : AppCompatActivity() {
         RC_CAPTURE_IMAGE -> {
           val image = data?.extras?.get("data") as Bitmap
           val resizedImage = Bitmap.createScaledBitmap(image, DIM_IMG_SIZE_X, DIM_IMG_SIZE_Y, false)
-          photoPreview.setImageBitmap(resizedImage.toGreyscale())
+          photoPreview.setImageBitmap(resizedImage)
           runInference(resizedImage)
         }
       }
